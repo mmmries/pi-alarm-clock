@@ -4,9 +4,16 @@ defmodule Blinky.Gpio do
   @export "/sys/class/gpio/export"
   @unexport "/sys/class/gpio/unexport"
 
+  ## Public Interface
+
   def start_link(pin_number) do
     GenServer.start_link(__MODULE__, pin_number)
   end
+
+  def turn_on(pid), do: GenServer.call(pid, :on)
+  def turn_off(pid), do: GenServer.call(pid, :off)
+
+  def stop(pid), do: GenServer.cast(pid, :stop)
 
   ## GenServer callbacks
 
@@ -24,9 +31,12 @@ defmodule Blinky.Gpio do
   def handle_call(:on, _from, pin_number) do
     {:reply, File.write(pin_value_path(pin_number), "1"), pin_number}
   end
-
   def handle_call(:off, _from, pin_number) do
     {:reply, File.write(pin_value_path(pin_number), "0"), pin_number}
+  end
+
+  def handle_cast(:stop, pin_number) do
+    {:stop, :normal, pin_number}
   end
 
   def terminate(_reason, pin_number) do
