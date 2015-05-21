@@ -27,8 +27,6 @@ defmodule Blinky.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [
-      {:exrm, "~> 0.15"},
-    ]
+    []
   end
 end
