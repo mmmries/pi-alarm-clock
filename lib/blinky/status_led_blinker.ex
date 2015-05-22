@@ -1,4 +1,4 @@
-defmodule Blinky do
+defmodule Blinky.StatusLedBlinker do
   require Logger
 
   # Trigger file for LED0
@@ -14,7 +14,7 @@ defmodule Blinky do
   end
 
   def blink do
-    Logger.debug "Let's Blink!"
+    Logger.debug "Status LED blink"
     set_led(true)
     :timer.sleep 1000
     set_led(false)
@@ -32,8 +32,6 @@ defmodule Blinky do
 
   def set_brightness(val) do
       File.write(@led_brightntess, val)
-      |> inspect
-      |> Logger.debug
   end
 
   def setup_led, do: File.write(@led_trigger, "none")
