@@ -8,7 +8,7 @@ defmodule Mix.Tasks.AlarmClock do
 
   def run(_) do
     keep_sleeping_pid = Blinky.Gpio.start_link(@keep_sleeping_pin)
-    time_to_wakeup_pid = Blinky.Gpio.start_link(@time_to_wakeup_pid)
+    time_to_wakeup_pid = Blinky.Gpio.start_link(@time_to_wakeup_pin)
     loop(keep_sleeping_pid, time_to_wakeup_pid)
   end
 
