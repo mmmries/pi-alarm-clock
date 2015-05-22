@@ -1,2 +1,1 @@
-%{"conform": {:hex, :conform, "0.13.0"},
-  "exrm": {:hex, :exrm, "0.15.3"}}
+%{"logger_multicast_backend": {:git, "git://github.com/cellulose/logger_multicast_backend.git", "829a94cafd81d13a70fcca7b8f0d8006a7996e8b", []}}

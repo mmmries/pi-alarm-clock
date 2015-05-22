@@ -14,7 +14,9 @@ defmodule Blinky.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [
+      applications: [:logger],
+    ]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +29,8 @@ defmodule Blinky.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    []
+    [
+      {:logger_multicast_backend, github: "cellulose/logger_multicast_backend"},
+    ]
   end
 end
