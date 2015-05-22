@@ -6,8 +6,8 @@ defmodule Blinky.Gpio do
 
   ## Public Interface
 
-  def start_link(pin_number) do
-    GenServer.start_link(__MODULE__, pin_number)
+  def start_link(pin_number, opts \\ []) do
+    GenServer.start_link(__MODULE__, pin_number, opts)
   end
 
   def turn_on(pid), do: GenServer.call(pid, :on)
@@ -18,10 +18,10 @@ defmodule Blinky.Gpio do
   ## GenServer callbacks
 
   def init(pin_number) when is_number(pin_number) do
-    case File.write(@export, pin_number |> Integer.to_string) do
+    case write(@export, pin_number |> Integer.to_string) do
       {:error, err} -> {:stop, err}
       :ok ->
-        case File.write(pin_direction_path(pin_number), "out") do
+        case write(pin_direction_path(pin_number), "out") do
           {:error, err} -> {:stop, err}
           :ok -> {:ok, pin_number}
         end
@@ -29,10 +29,10 @@ defmodule Blinky.Gpio do
   end
 
   def handle_call(:on, _from, pin_number) do
-    {:reply, File.write(pin_value_path(pin_number), "1"), pin_number}
+    {:reply, write(pin_value_path(pin_number), "1"), pin_number}
   end
   def handle_call(:off, _from, pin_number) do
-    {:reply, File.write(pin_value_path(pin_number), "0"), pin_number}
+    {:reply, write(pin_value_path(pin_number), "0"), pin_number}
   end
 
   def handle_cast(:stop, pin_number) do
@@ -40,7 +40,7 @@ defmodule Blinky.Gpio do
   end
 
   def terminate(_reason, pin_number) do
-    File.write(@unexport, pin_number)
+    write(@unexport, pin_number)
     :ok
   end
 
@@ -48,4 +48,10 @@ defmodule Blinky.Gpio do
 
   defp pin_direction_path(pin_number), do: "/sys/class/gpio/gpio#{pin_number}/direction"
   defp pin_value_path(pin_number), do: "/sys/class/gpio/gpio#{pin_number}/value"
+  defp write(path, data) do
+    case Mix.env do
+      :prod -> File.write(path, data)
+      _ -> :ok
+    end
+  end
 end

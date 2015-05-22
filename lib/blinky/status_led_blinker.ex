@@ -7,9 +7,14 @@ defmodule Blinky.StatusLedBlinker do
   # Brightness file for LED0
   @led_brightntess "/sys/class/leds/led0/brightness"
 
-  def start(_type, _args) do
+  def start_link do
+    pid = Process.spawn(__MODULE__, :init, [], [])
+    {:ok, pid}
+  end
+
+  def init do
+    Logger.debug "Starting up the status LED Blinker"
     setup_led
-    # Start blinking forever
     blink_forever
   end
 
@@ -31,8 +36,15 @@ defmodule Blinky.StatusLedBlinker do
   def set_led(false), do: set_brightness("0")
 
   def set_brightness(val) do
-      File.write(@led_brightntess, val)
+    write(@led_brightntess, val)
   end
 
-  def setup_led, do: File.write(@led_trigger, "none")
+  def setup_led, do: write(@led_trigger, "none")
+
+  defp write(path, data) do
+    case Mix.env do
+      :prod -> File.write(path, data)
+      _ -> :ok
+    end
+  end
 end
