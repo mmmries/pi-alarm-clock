@@ -7,6 +7,10 @@ At 5am it turns on a red LED (indicating that it is time to stay in bed), then a
 
 ## Setting Up The Pi
 
+#### Wiring
+
+I connected the red LED to pin 11 (gpio17) and the green LED to pin 15 (gpio22).
+
 #### Install Erlang-mini
 
 ```
@@ -43,3 +47,13 @@ mix deps.get
 mix compile
 elixir --detached --sname pi1 --cookie pi S mix alarm_clock
 ```
+
+## Connecting Remotely
+
+If you want to checkout what is going on inside the erlang node running on your pi you can connect to it remotely using a command like
+
+```
+iex --sname laptop --cookie pi --remsh pi1@pi1
+```
+
+__Note__: Make sure you use the same cookie as you used when booting the application on the pi and make sure your computer knows how to resolve the address of the pi
