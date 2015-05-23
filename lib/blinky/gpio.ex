@@ -1,4 +1,5 @@
 defmodule Blinky.Gpio do
+  require Logger
   use GenServer
 
   @export "/sys/class/gpio/export"
@@ -18,10 +19,10 @@ defmodule Blinky.Gpio do
   ## GenServer callbacks
 
   def init(pin_number) when is_number(pin_number) do
-    case write(@export, pin_number |> Integer.to_string) do
+    case write_ignore_ebusy(@export, "#{pin_number}") do
       {:error, err} -> {:stop, err}
       :ok ->
-        case write(pin_direction_path(pin_number), "out") do
+        case write_ignore_ebusy(pin_direction_path(pin_number), "out") do
           {:error, err} -> {:stop, err}
           :ok -> {:ok, pin_number}
         end
@@ -36,11 +37,14 @@ defmodule Blinky.Gpio do
   end
 
   def handle_cast(:stop, pin_number) do
+    Logger.debug "stopping GPIO for #{pin_number}"
     {:stop, :normal, pin_number}
   end
 
   def terminate(_reason, pin_number) do
-    write(@unexport, pin_number)
+    Logger.debug "terminating GPIO for #{pin_number}"
+    result = write(@unexport, "#{pin_number}")
+    Logger.debug "unexport #{pin_number} :: #{result}"
     :ok
   end
 
@@ -48,10 +52,22 @@ defmodule Blinky.Gpio do
 
   defp pin_direction_path(pin_number), do: "/sys/class/gpio/gpio#{pin_number}/direction"
   defp pin_value_path(pin_number), do: "/sys/class/gpio/gpio#{pin_number}/value"
+
   defp write(path, data) do
     case Mix.env do
       :prod -> File.write(path, data)
       _ -> :ok
+    end
+  end
+
+  # if the pins have already been initialized (or weren't cleaned up properly)
+  # then we get back an {:error, :ebusy}, that is okay for our purposes because
+  # it just means we don't need to re-initialize the pin
+  defp write_ignore_ebusy(path, data) do
+    case write(path, data) do
+      {:error, :ebusy} -> :ok
+      :ok -> :ok
+      {:error, err} -> {:error, err}
     end
   end
 end
