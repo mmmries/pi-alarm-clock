@@ -40,12 +40,25 @@ echo 'pi1' > /etc/hostname
 #### Checkout Project And Boot
 
 ```
+# do this as root so we have access to the gpio pins
 git clone git@github.com:mmmries/pi-alarm-clock.git
 cd pi-alarm-clock
 mix local.hex
 mix deps.get
-mix compile
-elixir --detached --sname pi1 --cookie pi S mix run
+MIX_ENV=prod mix compile
+MIX_ENV=prod elixir --detached --sname pi1 --cookie pi --no-halt -S mix run
+```
+
+To stop the project open a remote shell and execute:
+
+```elixir
+init:stop()
+```
+
+Or from a local iex session (with the same cookie) run:
+
+```elixir
+:rpc.call(:pi1@pi1, :init, :stop, [])
 ```
 
 ## Connecting Remotely
