@@ -52,12 +52,14 @@ MIX_ENV=prod elixir --detached --sname pi1 --cookie pi --no-halt -S mix run
 To stop the project open a remote shell and execute:
 
 ```elixir
+Application.stop(:blinky)
 init:stop()
 ```
 
 Or from a local iex session (with the same cookie) run:
 
 ```elixir
+:rpc.call(:pi@pi1, Application, :stop, [:blinky])
 :rpc.call(:pi1@pi1, :init, :stop, [])
 ```
 
