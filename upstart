@@ -1,0 +1,18 @@
+description "blinky"
+
+setuid root
+setgid root
+
+start on startup
+stop on shutdown
+
+respawn_limit 10 5
+
+env MIX_ENV=prod
+chdir /opt/blinky
+
+# we might need to set one of these flags so it tracks the right PID
+#expect fork
+#expect daemon
+
+exec elixir --detached --sname blinky --cookie pi --no-halt -S mix run
