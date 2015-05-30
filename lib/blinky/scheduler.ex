@@ -26,7 +26,7 @@ defmodule Blinky.Scheduler do
   end
 
   def handle_info(:timeout, :idle) do
-    case between(5,6) do
+    case between?(5,6) do
     true ->
       Logger.debug "SCH idle -> keep_sleeping"
       Blinky.Gpio.turn_on(:keep_sleeping)
@@ -36,7 +36,7 @@ defmodule Blinky.Scheduler do
     end
   end
   def handle_info(:timeout, :keep_sleeping) do
-    case between(5,6) do
+    case between?(5,6) do
     true ->
       {:noreply, :keep_sleeping, @interval}
     false ->
@@ -47,7 +47,7 @@ defmodule Blinky.Scheduler do
     end
   end
   def handle_info(:timeout, :time_to_wakeup) do
-    case between?(7,8)
+    case between?(7,8) do
     true ->
       {:noreply, :time_to_wakeup, @interval}
     false ->
