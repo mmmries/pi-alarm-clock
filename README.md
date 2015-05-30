@@ -12,9 +12,35 @@ At 5am it turns on a red LED (indicating that it is time to stay in bed), then a
 I am booting from vanilla Raspbian (2015-05-15) and making the following changes before I start installing software:
 
 * Expand the file system to use the whole MicroSD Card
+* Change the default locale to en-US UTF-8 UTF-8
+* Change the timezone to America/Denver
 * Change the keyboard layout to a US layout
 * Change the hostname to pi1
-* Setup [WiFi Settings](http://www.maketecheasier.com/setup-wifi-on-raspberry-pi/)
+
+#### Configure WiFi
+
+
+This setup is based on [these WiFi Settings](http://www.andreagrandi.it/2014/09/02/how-to-configure-edimax-ew-7811un-wifi-dongle-on-raspbian/).
+
+* `nano /etc/network/interfaces`
+
+```
+auto lo
+iface lo inet loopback
+
+auto eth0
+allow-hotplug eth0
+iface eth0 inet manual
+
+allow-hotplug wlan0
+auto wlan0
+
+iface wlan0 inet dhcp
+wpa-ssid YOURESSID
+wpa-psk YOURWPAPASSWORD
+```
+
+* `echo 'options 8192cu rtw_power_mgnt=0 rtw_enusbss=0' > /etc/modprobe.d/8192cu.conf`
 
 
 #### Wiring
@@ -28,14 +54,15 @@ echo "deb http://packages.erlang-solutions.com/debian wheezy contrib" >> /etc/ap
 wget http://packages.erlang-solutions.com/debian/erlang_solutions.asc
 sudo apt-key add erlang_solutions.asc && rm erlang_solutions.asc
 sudo apt-get update
-sudo apt-get install -y erlang-mini upstart htop
+apt-get install -y --force-yes erlang-mini upstart htop
+# You will have to confirm the switch to upstart by typing 'Yes, do as I say!'
 ```
 
 #### Install Precompiled Elixir
 
 ```
 mkdir /opt/elixir-1.0.4
-curl  -L https://github.com/elixir-lang/elixir/releases/download/v1.0.4/Precompiled.zip -o /opt/elixir0.0.4/precompiled.zip
+curl  -L https://github.com/elixir-lang/elixir/releases/download/v1.0.4/Precompiled.zip -o /opt/elixir-1.0.4/precompiled.zip
 cd /opt/elixir-1.0.4
 unzip precompiled.zip
 echo 'export PATH=/opt/elixir-1.0.4/bin:$PATH' >> /etc/bash.bashrc
