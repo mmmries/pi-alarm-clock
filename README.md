@@ -7,6 +7,16 @@ At 5am it turns on a red LED (indicating that it is time to stay in bed), then a
 
 ## Setting Up The Pi
 
+#### Setup the Pi
+
+I am booting from vanilla Raspbian (2015-05-15) and making the following changes before I start installing software:
+
+* Expand the file system to use the whole MicroSD Card
+* Change the keyboard layout to a US layout
+* Change the hostname to pi1
+* Setup [WiFi Settings](http://www.maketecheasier.com/setup-wifi-on-raspberry-pi/)
+
+
 #### Wiring
 
 I connected the red LED to pin 11 (gpio17) and the green LED to pin 15 (gpio22).
@@ -14,39 +24,33 @@ I connected the red LED to pin 11 (gpio17) and the green LED to pin 15 (gpio22).
 #### Install Erlang-mini
 
 ```
-echo "deb http://packages.erlang-solutions.com/debian wheezy contrib\n" >> /etc/apt/sources.list
+echo "deb http://packages.erlang-solutions.com/debian wheezy contrib" >> /etc/apt/sources.list
 wget http://packages.erlang-solutions.com/debian/erlang_solutions.asc
 sudo apt-key add erlang_solutions.asc && rm erlang_solutions.asc
 sudo apt-get update
-sudo apt-get install -y erlang-mini
+sudo apt-get install -y erlang-mini upstart htop
 ```
 
 #### Install Precompiled Elixir
 
 ```
-mkdir elixir-1.0.4
-curl https://github.com/elixir-lang/elixir/releases/download/v1.0.4/Precompiled.zip -o elixir-1.0.4/precompiled.zip
-cd elixir-1.0.4
+mkdir /opt/elixir-1.0.4
+curl  -L https://github.com/elixir-lang/elixir/releases/download/v1.0.4/Precompiled.zip -o /opt/elixir0.0.4/precompiled.zip
+cd /opt/elixir-1.0.4
 unzip precompiled.zip
-echo 'export PATH=/home/pi/elixir-1.0.4/bin:$PATH' >> /etc/bash.bashrc
-```
-
-#### Set Hostname
-
-```
-echo 'pi1' > /etc/hostname
+echo 'export PATH=/opt/elixir-1.0.4/bin:$PATH' >> /etc/bash.bashrc
 ```
 
 #### Checkout Project And Boot
 
 ```
 # do this as root so we have access to the gpio pins
-git clone git@github.com:mmmries/pi-alarm-clock.git
-cd pi-alarm-clock
+git clone git@github.com:mmmries/pi-alarm-clock.git /opt/pi-alarm-clock
+cd /opt/pi-alarm-clock
 mix local.hex
 mix deps.get
 MIX_ENV=prod mix compile
-MIX_ENV=prod elixir --detached --sname pi1 --cookie pi --no-halt -S mix run
+MIX_ENV=prod elixir --detached --sname blinky --cookie pi --no-halt -S mix run
 ```
 
 To stop the project open a remote shell and execute:
@@ -68,7 +72,7 @@ Or from a local iex session (with the same cookie) run:
 If you want to checkout what is going on inside the erlang node running on your pi you can connect to it remotely using a command like
 
 ```
-iex --sname laptop --cookie pi --remsh pi1@pi1
+iex --cookie pi --remsh blinky@pi1
 ```
 
 __Note__: Make sure you use the same cookie as you used when booting the application on the pi and make sure your computer knows how to resolve the address of the pi
