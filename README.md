@@ -7,11 +7,17 @@ At 5am it turns on a red LED (indicating that it is time to stay in bed), then a
 
 ## Setting Up The Pi
 
-#### Setup the Pi
+From vanilla Raspbian (2015-05-15) use a wired ethernet (or USB ethernet) connection and boot the pi.
 
-I am booting from vanilla Raspbian (2015-05-15) and making the following changes before I start installing software:
+SSH into the pi with the default credentials:
+
+`username: pi`
+`password: raspberry`
+
+Now run `sudo raspi-config` and make the following changes.
 
 * Expand the file system to use the whole MicroSD Card
+* Change the default user password (optional)
 * Change the default locale to en-US UTF-8 UTF-8
 * Change the timezone to America/Denver
 * Change the keyboard layout to a US layout
