@@ -83,9 +83,11 @@ cd /opt/pi-alarm-clock
 mix local.hex
 mix deps.get
 MIX_ENV=prod mix compile
-MIX_ENV=prod elixir --detached --sname blinky --cookie pi --no-halt -S mix run
+cp upstart /etc/init/blinky.log
+start blinky
 ```
 
+#### Connecting to and Stopping The Application
 To stop the project open a remote shell and execute:
 
 ```elixir
@@ -105,7 +107,7 @@ Or from a local iex session (with the same cookie) run:
 If you want to checkout what is going on inside the erlang node running on your pi you can connect to it remotely using a command like
 
 ```
-iex --cookie pi --remsh blinky@pi1
+iex --sname laptop --cookie pi --remsh blinky@pi1
 ```
 
 __Note__: Make sure you use the same cookie as you used when booting the application on the pi and make sure your computer knows how to resolve the address of the pi
@@ -114,4 +116,8 @@ __Note__: Make sure you use the same cookie as you used when booting the applica
 
 The easiest way to check if the alarm clock is still running is to look at the status LED (green LED on the pi). If the application is running it will be blinking the green LED on/off every 1 second as a heartbeat.
 
-Our application also sends all logs via UDP multicast in `prod` and `dev`. So you can run `ruby listen.rb` to listen for those log messages and see what your alarm is telling you.
+You can also run the `listen.rb` ruby script inlcuded in this project which will listen for the log messages being published via UDP broadcast.
+
+```shell
+$ ruby listen.rb
+```
