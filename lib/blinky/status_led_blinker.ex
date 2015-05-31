@@ -19,7 +19,6 @@ defmodule Blinky.StatusLedBlinker do
   end
 
   def blink do
-    Logger.debug "Status LED blink"
     set_led(true)
     :timer.sleep 1000
     set_led(false)
