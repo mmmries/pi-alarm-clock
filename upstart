@@ -1,5 +1,5 @@
-start on filesystem and net-device-up IFACE=wlan0
-stop on shutdown
+start on runlevel [2345]
+stop on runlevel[!2345]
 
 script
   cd /opt/blinky
