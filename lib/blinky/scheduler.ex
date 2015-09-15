@@ -40,12 +40,26 @@ defmodule Blinky.Scheduler do
       expected_state == current_state ->
         {:noreply, current_state, @interval}
       true ->
-        Logger.debug "I need to change the state to #{expected_state}"
-        {:noreply, current_state, @interval}
+        Logger.debug "setting LEDs to #{expected_state}"
+        set_leds(expected_state)
+        {:noreply, expected_state, @interval}
     end
   end
 
   ## Private Interface
+
+  defp set_leds(:keep_sleeping) do
+    Blinky.Gpio.turn_on(:keep_sleeping)
+    Blinky.Gpio.turn_off(:time_to_wakeup)
+  end
+  defp set_leds(:time_to_wakeup) do
+    Blinky.Gpio.turn_off(:keep_sleeping)
+    Blinky.Gpio.turn_on(:time_to_wakeup)
+  end
+  defp set_leds(:idle) do
+    Blinky.Gpio.turn_off(:keep_sleeping)
+    Blinky.Gpio.turn_off(:time_to_wakeup)
+  end
 
   defp keep_sleeping_range do
     Application.get_env(Blinky, :keep_sleeping_range, Range.new({5,30,0},{7,14,59}))
