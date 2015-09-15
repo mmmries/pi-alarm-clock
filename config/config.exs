@@ -21,4 +21,7 @@ use Mix.Config
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 #
-import_config "#{Mix.env}.exs"
+
+config Blinky,
+        keep_sleeping_range: Range.new({5,30,0}, {7,14,59}),
+        time_to_wakeup_range: Range.new({7,15,0}, {8,29,59})

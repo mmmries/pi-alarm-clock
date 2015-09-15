@@ -8,7 +8,7 @@ defmodule Blinky do
       worker(Blinky.Gpio, [17, [name: :keep_sleeping]], id: :keep_sleeping),
       worker(Blinky.Gpio, [22, [name: :time_to_wakeup]], id: :time_to_wakeup),
       worker(Blinky.StatusLedBlinker, []),
-      worker(Blinky.Scheduler, [:idle, [name: :scheduler]]),
+      worker(Blinky.Scheduler, [[name: :scheduler]]),
     ]
 
     opts = [strategy: :one_for_one, name: Blinky.Supervisor]
@@ -16,7 +16,7 @@ defmodule Blinky do
     Supervisor.start_link(children, opts)
   end
 
-  def config_change(changed, _new, removed) do
+  def config_change(_changed, _new, _removed) do
     :ok
   end
 end
